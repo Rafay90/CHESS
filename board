@@ -1,0 +1,133 @@
+class Board:
+    def _init_(self):
+        self.board = [
+            ['r', 'n', 'b', 'q', 'k', 'b', 'n', 'r'],  # Black pieces row
+            ['p', 'p', 'p', 'p', 'p', 'p', 'p', 'p'],  # Black pawns row
+            ['.', '.', '.', '.', '.', '.', '.', '.'],  # Empty row
+            ['.', '.', '.', '.', '.', '.', '.', '.'],  # Empty row
+            ['.', '.', '.', '.', '.', '.', '.', '.'],  # Empty row
+            ['.', '.', '.', '.', '.', '.', '.', '.'],  # Empty row
+            ['P', 'P', 'P', 'P', 'P', 'P', 'P', 'P'],  # White pawns row
+            ['R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R']   # White pieces row
+        ]
+
+    def print_board(self):
+        for row in self.board:
+            print(' '.join(row))
+
+    def apply_move(self, move):
+        start_col = ord(move[0]) - ord('a')
+        start_row = 8 - int(move[1])
+        end_col = ord(move[2]) - ord('a')
+        end_row = 8 - int(move[3])
+
+        self.board[end_row][end_col] = self.board[start_row][start_col]
+        self.board[start_row][start_col] = '.'
+
+    def generate_moves(self):
+        all_moves = []
+        for row in range(8):
+            for col in range(8):
+                piece = self.board[row][col]
+                if piece != '.':
+                    piece_moves = self.generate_piece_moves(piece, row, col)
+                    all_moves.extend(piece_moves)
+        return all_moves
+
+    def generate_piece_moves(self, piece, row, col):
+        if piece.lower() == 'p':
+            return self.generate_pawn_moves(piece, row, col)
+        elif piece.lower() == 'n':
+            return self.generate_knight_moves(piece, row, col)
+        elif piece.lower() == 'b':
+            return self.generate_bishop_moves(piece, row, col)
+        elif piece.lower() == 'r':
+            return self.generate_rook_moves(piece, row, col)
+        elif piece.lower() == 'q':
+            return self.generate_queen_moves(piece, row, col)
+        elif piece.lower() == 'k':
+            return self.generate_king_moves(piece, row, col)
+        return []
+
+    def generate_pawn_moves(self, piece, row, col):
+        moves = []
+        direction = -1 if piece.isupper() else 1
+        start_row = 6 if piece.isupper() else 1
+        if self.board[row + direction][col] == '.':
+            moves.append((row + direction, col))
+            if row == start_row and self.board[row + 2 * direction][col] == '.':
+                moves.append((row + 2 * direction, col))
+        for d_col in [-1, 1]:
+            if 0 <= col + d_col < 8:
+                if self.board[row + direction][col + d_col] != '.' and self.board[row + direction][col + d_col].isupper() != piece.isupper():
+                    moves.append((row + direction, col + d_col))
+        return moves
+
+    def generate_knight_moves(self, piece, row, col):
+        moves = []
+        knight_moves = [(2, 1), (2, -1), (-2, 1), (-2, -1), (1, 2), (1, -2), (-1, 2), (-1, -2)]
+        for dr, dc in knight_moves:
+            new_row, new_col = row + dr, col + dc
+            if 0 <= new_row < 8 and 0 <= new_col < 8:
+                if self.board[new_row][new_col] == '.' or self.board[new_row][new_col].isupper() != piece.isupper():
+                    moves.append((new_row, new_col))
+        return moves
+
+    def generate_bishop_moves(self, piece, row, col):
+        moves = []
+        for dr, dc in [(-1, -1), (-1, 1), (1, -1), (1, 1)]:
+            new_row, new_col = row, col
+            while True:
+                new_row += dr
+                new_col += dc
+                if 0 <= new_row < 8 and 0 <= new_col < 8:
+                    if self.board[new_row][new_col] == '.':
+                        moves.append((new_row, new_col))
+                    elif self.board[new_row][new_col].isupper() != piece.isupper():
+                        moves.append((new_row, new_col))
+                        break
+                    else:
+                        break
+                else:
+                    break
+        return moves
+
+    def generate_rook_moves(self, piece, row, col):
+        moves = []
+        for dr, dc in [(-1, 0), (1, 0), (0, -1), (0, 1)]:
+            new_row, new_col = row, col
+            while True:
+                new_row += dr
+                new_col += dc
+                if 0 <= new_row < 8 and 0 <= new_col < 8:
+                    if self.board[new_row][new_col] == '.':
+                        moves.append((new_row, new_col))
+                    elif self.board[new_row][new_col].isupper() != piece.isupper():
+                        moves.append((new_row, new_col))
+                        break
+                    else:
+                        break
+                else:
+                    break
+        return moves
+
+    def generate_queen_moves(self, piece, row, col):
+        return self.generate_bishop_moves(piece, row, col) + self.generate_rook_moves(piece, row, col)
+
+    def generate_king_moves(self, piece, row, col):
+        moves = []
+        for dr in [-1, 0, 1]:
+            for dc in [-1, 0, 1]:
+                if dr == 0 and dc == 0:
+                    continue
+                new_row, new_col = row + dr, col + dc
+                if 0 <= new_row < 8 and 0 <= new_col < 8:
+                    if self.board[new_row][new_col] == '.' or self.board[new_row][new_col].isupper() != piece.isupper():
+                        moves.append((new_row, new_col))
+        return moves
+
+# Example usage
+board = Board()
+board.print_board()
+moves = board.generate_moves()
+print(moves)
