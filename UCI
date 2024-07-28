@@ -1,0 +1,36 @@
+ def uci_loop(self):
+        while True:
+            command = input().strip()
+            if command == "uci":
+                self.uci()
+            elif command == "isready":
+                self.isready()
+            elif command.startswith("position"):
+                self.position(command)
+            elif command.startswith("go"):
+                self.go(command)
+            elif command == "quit":
+                break
+
+    def uci(self):
+        print("id name MyChessEngine")
+        print("id author YourName")
+        print("uciok")
+
+    def isready(self):
+        print("readyok")
+
+    def position(self, command):
+        if "startpos" in command:
+            self.board.set_start_position()
+        elif "fen" in command:
+            fen = command.split(" ", 2)[2]
+            self.board.set_position(fen)
+
+    def go(self, command):
+        best_move = self.search.minimax(self.board, 3, float('-inf'), float('inf'), True)
+        print(f"bestmove {best_move}")
+
+if __name__ == "_main_":
+    uci = UCI()
+    uci.uci_loop()
