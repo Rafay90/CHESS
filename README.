@@ -1,0 +1,5 @@
+Chess Engine for Hackathon
+The board file is for board generation and legal chess moves
+The UCI file the Universe Chess Interface
+The Evaluation file explains the functionality of the Search Class
+The search algorithm uses minimax with alpha-beta pruning.
