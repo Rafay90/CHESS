@@ -1,2 +1,0 @@
-# CHESS
-Hackathon Chess Engine
